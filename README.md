@@ -1,0 +1,2 @@
+# AzureTool
+AZUREA automation tool
