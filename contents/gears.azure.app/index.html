@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<link rel="icon" href="image/favicon.jpg" />
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>自動化！ AZUREA-空の唄-</title>
+    <style>
+        h1 {
+            background-image: url(image/logo.png);
+            background-repeat: no-repeat;
+            width: 400px;
+            height: 240px;
+            text-indent: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        div button {
+            font-size: 20px;
+            width: 70px;
+            height: 100px;
+            vertical-align: top;
+            font-family: "游明朝", YuMincho, "Hiragino Mincho ProN W3", "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "HG明朝E", "ＭＳ Ｐ明朝", "ＭＳ 明朝", serif;
+            font-weight: bold;
+            background-color: white;
+            color: #3b2f21;
+            border: solid #f0e76d 1px;
+            transition-duration: .4s;
+        }
+        div button:hover {
+            -webkit-transform: scale(1.1) rotate(10deg);
+            transform: rscale(1.1) otate(10deg);
+        }
+        div button:disabled {
+            background-color: #d8bfa0;
+            color: #eee4d7;
+        }
+        div button.active {
+            background-color: #d8bfa0;
+            color: #eee4d7;
+        }
+        #message_area {
+            height: 4rem;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            white-space: pre;
+            overflow-y: scroll;
+            overflow-x: auto;
+            position: fixed;
+            bottom: 0;
+            color: whitesmoke;
+            font-weight: 600;
+            font-family: "Yu Gothic UI", sans-serif;
+        }
+        #dev1, #dev2, #dev3, #dev4 {
+            /*display: none;*/
+        }
+        #dev_cur_img, #dev1_img, #dev2_img, #dev3_img, #dev4_img {
+            height: 100px;
+        }
+        .setting, #adb_path, #data_path {
+            font-size: 14px;
+        }
+        #adb_path, #data_path {
+            width: 30em;
+        }
+        #adb_path_select, #data_path_select, #save_setting {
+            font-size: 14px;
+            height: 1.5em;
+        }
+    </style>
+    <script src="quiz-data.js"></script>
+</head>
+
+<body>
+
+    <h1>AZUREA</h1>
+    <table>
+        <tr>
+            <td>
+                <img id='dev_cur_img' src="image/device_0.png">
+            </td>
+            <td>
+                <div class="setting">
+                    設定：<button id="save_setting">保存</button>
+                    <table>
+                        <tr><th>adbパス</th><td><input id="adb_path"><button id="adb_path_select">選択</button></td></tr>
+                        <tr><th>dataパス</th><td><input id="data_path"><button id="data_path_select">選択</button></td></tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div>
+        <button onClick="exec_stop()" disabled id="stop_button">停止</button>
+        <button onClick="exec_daily_shop_mission()" id="daily_shop_mission">万事屋</button>
+        <button onClick="exec_treasure_box()" id="treasure_box">祝儀監視</button>
+        <button onClick="exec_stadium()" id="stadium">競技場</button>
+        <button onClick="exec_random_pvp()" id="random_pvp">星落演兵</button>
+        <button onClick="exec_quiz()" id="quiz">神語の試</button>
+        <button onClick="exec_job_hairdresser()" id="job_hairdresser">仕事 美容師</button>
+        <button onClick="exec_gods_collect()" id="gods_collect">神格採取</button>
+        <button onClick="exec_card_collect()" id="card_collect">札遊び使用</button>
+    </div>
+    <hr>
+    <div>
+        <table>
+            <tr>
+                <td rowspan="2"><button onClick="exec_move()" id="move_button">移動</button></td>
+                <td colspan="2">
+                    <select id='move_name'>
+                        <option value="952,446">蘇蘭郡</option>
+                        <option value="733,516">傘村</option>
+                        <option value="879,640">祈願の海</option>
+                        <option value="747,361">霊墟野外</option>
+                        <option value="950,190">蛍川郡</option>
+                        <option value="680,214">帝都</option>
+                        <option value="832,63">雲垂群島</option>
+                        <option value="379,104">浮雲の孤宮</option>
+                        <option value="399,274">盈霊郡</option>
+                    </select>
+                </td>
+                <td rowspan="2"><button onClick="exec_move_select('蘇蘭郡',302,427)">神格採取 1</button>
+                <td rowspan="2"><button onClick="exec_move_select('蘇蘭郡',334,439)">神格採取 2</button>
+                <td rowspan="2"><button onClick="exec_move_select('傘村',194,66)">神格採取(傘村)</button>
+                <td rowspan="2"><button onClick="exec_move_select('蛍川郡',984,1038)">霧の湿地(裁定)</button>
+            </tr>
+            <tr>
+                <td>X:<input id='move_x' type='text' value="" style="width:4em">
+                <td>Y:<input id='move_y' type='text' value="" style="width:4em">
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <div>
+        <table>
+            <tr>
+                <td rowspan="2"><button onClick="exec_move_home()" id="move_home_button">ホーム</button></td>
+                <td colspan="2">
+                    <select id='move_home_name'>
+                        <option value="460,105">蒼海群島</option>
+                        <option value="631,114">爽風群島</option>
+                        <option value="1122,168">桃花群島</option>
+                        <option value="232,223">銀河群島</option>
+                        <option value="584,250">満月群島</option>
+                        <option value="732,238">夕霞群島</option>
+                        <option value="305,329">群青群島</option>
+                        <option value="950,311">珊瑚群島</option>
+                        <option value="1083,335">月下群島</option>
+                        <option value="138,421">飛鳥群島</option>
+                        <option value="476,401">雪華群島</option>
+                        <option value="913,410">夏雲群島</option>
+                        <option value="1133,449">天界群島</option>
+                        <option value="217,540">鮫波群島</option>
+                        <option value="500,548">桃源群島</option>
+                    </select>
+                </td>
+            <tr>
+                <td>区:<input id='move_home_x' type='text' value="1" style="width:4em">
+                <td>番:<input id='move_home_y' type='text' value="1" style="width:4em">
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <!--
+    <div>
+        <button onClick="exec_job()" id="job">仕事</button>
+        <button onClick="exec_test()" id="test">テスト</button>
+        <button onClick="exec_jump()" id="jump">跳躍(中央)</button>
+        <button onClick="exec_attack(1)" id="attak">攻撃①</button><button onClick="exec_attack(2)">攻撃②</button><br/>
+        <button onClick="exec_attack_time(1000/4*8,0       )" id="attak_time1">左 + 2</button>
+        <button onClick="exec_attack_time(1000/4*4,1000/4  )" id="attak_time2">左 + 1</button>
+        <button onClick="exec_attack_time(1000/4  ,1000/4  )" id="attak_time3">中央</button>
+        <button onClick="exec_attack_time(1000/4  ,1000/4*4)" id="attak_time4">右 + 1</button>
+        <button onClick="exec_attack_time(0       ,1000/4*8)" id="attak_time5">右 + 2</button><br/>
+    </div>
+    <hr>
+    -->
+    <div>
+        <button onClick="location.reload()">-再- 読込</button>
+        <button onClick="exec_save_screen()">画面保存</button>
+        <button onClick="exec_save_screen_repeat()" id="save_screen_repeat">画面保存(連続)</button>
+        <button onClick="exec_load_screen()">画面読込</button><input id="input_load_screen" type="file" style="display:none">
+        <button onClick="exec_cut_image()">画面切出</button>
+        <table>
+            <tr>
+                <td><input id='cut_image_x1' type='text' value="10"></td>
+                <td><input id='cut_image_y1' type='text' value="10"></td>
+            </tr>
+            <tr>
+                <td><input id='cut_image_x2' type='text' value="100"></td>
+                <td><input id='cut_image_y2' type='text' value="100"></td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button onClick="exec_device()">端末一覧</button>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><input id='dev1' type='text'><br><button id='dev1_set' style="height: 2em;">設定</button><img id='dev1_img' src="image/device_0.png"></td>
+                            <td><input id='dev3' type='text'><br><button id='dev3_set' style="height: 2em;">設定</button><img id='dev3_img' src="image/device_0.png"></td>
+                        </tr>
+                        <tr>
+                            <td><input id='dev2' type='text'><br><button id='dev2_set' style="height: 2em;">設定</button><img id='dev2_img' src="image/device_0.png"></td>
+                            <td><input id='dev4' type='text'><br><button id='dev4_set' style="height: 2em;">設定</button><img id='dev4_img' src="image/device_0.png"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <hr>
+    </div>
+    <img id="save_image">
+    <div style="height:4rem"></div>
+    <textarea id="message_area"></textarea>
+    <script>
+        window.addEventListener('load', async e => {
+            await CefSharp.BindObjectAsync("AzureApi");
+            AzureApi.SetAddMessage(add_message);
+            document.getElementById("adb_path").value = await AzureApi.GetSettingValue("adb_path");
+            document.getElementById("data_path").value = await AzureApi.GetSettingValue("data_path");
+        });
+        document.getElementById("adb_path_select").addEventListener("click", e => {
+            const f = document.getElementById("adb_path");
+            AzureApi.GetLocalFile("adbパス", f.value).then(ret => {
+                if (ret.length > 0) {
+                    f.value = ret;
+                }
+            })
+        });
+        document.getElementById("data_path_select").addEventListener("click", e => {
+            const f = document.getElementById("data_path");
+            AzureApi.GetLocalFolder("dataパス", f.value).then(ret => {
+                if (ret.length > 0) {
+                    f.value = ret;
+                }
+            })
+        });
+        document.getElementById("save_setting").addEventListener("click", e => {
+            AzureApi.SetSettingValue("adb_path", document.getElementById("adb_path").value);
+            AzureApi.SetSettingValue("data_path", document.getElementById("data_path").value);
+        });
+        //
+        const exec_save_screen = () => {
+            AzureApi.save_screen().then((res) => {
+                //AzureApi.print_line(`exec_save_screen?:${res}`);
+                const e = document.getElementById("save_image");
+                e.src = res;
+            })
+        }
+        const exec_save_screen_repeat = () => {
+            start_task("save_screen_repeat", async () => {
+                exec_save_screen();
+                return new Promise((resolve, reject) => {
+                    resolve({ message: "" });
+                });
+            }, 500);
+        }
+        // 画像読込
+        document.getElementById("input_load_screen").addEventListener("change", e => {
+            const i = e.target;
+            if (i.files.length > 0) {
+                document.getElementById("save_image").src = window.URL.createObjectURL(i.files[0]);
+            }
+        });
+        const exec_load_screen = () => {
+            document.getElementById("input_load_screen").click();
+            //const e = document.getElementById("save_image");
+            //e.src = "job12.png";
+        }
+        //
+        const exec_cut_image = () => {
+            AzureApi.cut_image("random_pvp_2.png", 168, 105, 196, 124).then((res) => {
+                //AzureApi.print_line(`exec_cut_iamge?:${res}`);
+                const e = document.getElementById("save_image");
+                e.src = res;
+            })
+        }
+        //
+        const exec_move_select = (name, x, y) => {
+            for (const e of document.querySelectorAll("#move_name option")) {
+                if (e.textContent == name) {
+                    e.selected = true;
+                }
+            }
+            document.getElementById("move_x").value = x;
+            document.getElementById("move_y").value = y;
+            exec_move();
+        }
+        // 移動
+        const exec_move = async () => {
+            //
+            let x = document.getElementById("move_x").value;
+            let m = x.match(/([0-9]+).*[-\/].*?([0-9]+)/);
+            if (m) {
+                document.getElementById("move_x").value = m[1];
+                document.getElementById("move_y").value = m[2];
+            }
+            //
+            // マップ
+            AzureApi.Touch(1181, 97); await AzureApi.Sleep(1.0);
+            // 世界マップ
+            AzureApi.Touch(99, 557); await AzureApi.Sleep(1.0);
+            // 場所
+            const e_move = document.getElementById("move_name");
+            const pos = e_move.value.split(/,/);
+            AzureApi.Touch(parseInt(pos[0]), parseInt(pos[1])); await AzureApi.Sleep(1.0);
+            // 座標 X
+            AzureApi.Touch(1066, 105); await AzureApi.Sleep(0.2);
+            AzureApi.InputText(document.getElementById("move_x").value); await AzureApi.Sleep(0.5);
+            // OK
+            AzureApi.Touch(1209, 661); await AzureApi.Sleep(0.5);
+            // 座標 Y
+            AzureApi.Touch(1146, 105); await AzureApi.Sleep(0.2);
+            AzureApi.InputText(document.getElementById("move_y").value); await AzureApi.Sleep(0.5);
+            // OK
+            AzureApi.Touch(1209, 661); await AzureApi.Sleep(0.5);
+            // 向かう
+            AzureApi.Touch(1234, 111); await AzureApi.Sleep(0.5);
+            // 戻る
+            AzureApi.Touch(85, 60); await AzureApi.Sleep(1.0);
+        }
+        // ホーム移動
+        const exec_move_home = async () => {
+            //
+            let x = document.getElementById("move_home_x").value;
+            let m = x.match(/([0-9]+).*[-\/].*?([0-9]+)/);
+            if (m) {
+                document.getElementById("move_home_x").value = m[1];
+                document.getElementById("move_home_y").value = m[2];
+            }
+            let r = null;
+            // メニュー
+            r = await AzureApi.MatchAndTouch([["move_home_1", "move_home_1.png", 1226, 211, 1252, 231, 1226, 211]]).then(async res => res);
+            if (r.index < 0) { add_message("メニュー なし？"); return; }
+            await AzureApi.Sleep(0.5);
+            // メニュー ホーム
+            AzureApi.Touch(928, 444); await AzureApi.Sleep(1.0);
+            // メニュー ホームにむかう
+            for (let i = 0; i < 5; ++i) {
+                r = await AzureApi.MatchAndTouch([
+                    ["move_home_3", "move_home_3.png", 815, 523, 934, 537, 815, 523],
+                    ["move_home_6", "move_home_6.png", 300, 598, 346, 642, 300, 598],
+                ]).then(async res => res);
+                if (r.index >= 0) { break; }
+                await AzureApi.Sleep(0.5);
+            }
+            if (r.index < 0) { add_message("ホームにむかう なし？"); return; }
+            await AzureApi.Sleep(0.5);
+            if (r.index == 1) {
+                await AzureApi.Sleep(0.5);
+                AzureApi.Touch(85, 643); await AzureApi.Sleep(1.0);
+            }
+            // ホーム選択
+            const e_move = document.getElementById("move_home_name");
+            const pos = e_move.value.split(/,/);
+            AzureApi.Touch(parseInt(pos[0]), parseInt(pos[1])); await AzureApi.Sleep(1.0);
+            await AzureApi.Sleep(0.5);
+            // ホームエリア
+            r = await AzureApi.MatchAndTouch([["move_home_5", "move_home_5.png", 815, 523, 934, 537, -1, -1]]).then(async res => res);
+            if (r.index < 0) { add_message("ホームエリア なし？"); return; }
+            await AzureApi.Sleep(1.0);
+            // ホームエリア
+            let move_x = parseInt(document.getElementById("move_home_x").value);
+            if (move_x <= 1) { move_x = 1; }
+            else if (move_x >= 14) { move_x = 14; }
+            r = await AzureApi.matchTemplate(`home_type_${move_x}.png`).then(async res => res);
+            if (r == "None") {
+                await AzureApi.Swipe(1151, 567, 1131, 300);
+                await AzureApi.Sleep(1.5);
+                r = await AzureApi.matchTemplate(`home_type_${move_x}.png`).then(async res => res);
+            }
+            add_message(`第${move_x}区：${r}`)
+            m = r.match(/([0-9]+),([0-9]+)/)
+            if (m) {
+                x = parseInt(m[1])
+                y = parseInt(m[2])
+                await AzureApi.Touch(x, y); await AzureApi.Sleep(1.0);
+            } else {
+                return
+            }
+            const home_pos = [
+                [143, 187],
+                [104, 317],
+                [299, 149],
+                [282, 361],
+                [212, 524],
+                [343, 605],
+                [479, 197],
+                [499, 325],
+                [482, 493],
+                [664, 145],
+                [679, 376],
+                [727, 516],
+                [608, 622],
+                [831, 181],
+                [884, 313],
+            ];
+            let move_y = parseInt(document.getElementById("move_home_y").value);
+            if (move_y <= 1) { move_y = 1; }
+            else if (move_y >= 15) { move_y = 15; }
+            --move_y;
+            add_message(`${move_y}:${home_pos[move_y][0]},${home_pos[move_y][1]}`)
+            AzureApi.Touch(home_pos[move_y][0], home_pos[move_y][1]); await AzureApi.Sleep(1.0);
+        }
+        //
+        document.getElementById("save_image").addEventListener("click", e => {
+            add_message(`画像クリック位置：${e.offsetX},${e.offsetY}`);
+        });
+
+        let timer_id = {};
+        let stop_timer_id = {};
+
+        const add_message = mes => {
+            const e = document.getElementById("message_area");
+            let text = e.textContent;
+            let a = text.split(/\r\n|\r|\n/);
+            a.push(mes);
+            e.textContent = a.slice(-10).join("\r\n");
+            e.scrollTop = e.scrollHeight;
+            //AzureApi.print_line(mes);
+        }
+        const switchJobFlag = flg => {
+            document.getElementById("stop_button").disabled = flg;
+        }
+        const start_task = (elementID, callback_func, delay = 0, timeoutID = 0) => {
+            exec_stop();
+            switchJobFlag(false);
+            const element = document.getElementById(elementID);
+            const title = element.textContent;
+            element.className = "active";
+            add_message(`開始：${title}`);
+            try {
+                clearTimeout(timer_id[timeoutID]);
+                clearInterval(timer_id[timeoutID]);
+            } catch { }
+            timer_id[timeoutID] = 1;
+            const f = () => {
+                clearTimeout(timer_id[timeoutID]);
+                callback_func().then(res => {
+                    if (stop_timer_id[timeoutID]) {
+                        add_message(`終了：${title}`);
+                    } else {
+                        try {
+                            if (res.message && res.message.length > 0) {
+                                add_message(`${res.message}`);
+                            }
+                        } catch { }
+                        try {
+                            if (res.delay && res.delay > 0) {
+                                timer_id[timeoutID] = setTimeout(f, res.delay);
+                            } else {
+                                timer_id[timeoutID] = setTimeout(f, delay);
+                            }
+                        } catch { }
+                    }
+                });
+            }
+            stop_timer_id[timeoutID] = false
+            f();
+        }
+        const exec_stop = () => {
+            switchJobFlag(true);
+            for (const e of Array.from(document.getElementsByClassName("active"))) {
+                e.className = "";
+            }
+            //AzureApi.print_line(`停止要求`);
+            for (let [key, value] of Object.entries(timer_id)) {
+                stop_timer_id[key] = true
+                //AzureApi.print_line(`停止[id]:${key}`);
+                try {
+                    clearInterval(value);
+                    clreatTimeout(value);
+                } catch { }
+            }
+        }
+
+        const exec_job = () => start_task("job", async () => {
+            AzureApi.Touch(1040, 470); await AzureApi.Sleep(0.01);
+            return new Promise((resolve, reject) => {
+                resolve({ message: "OK" });
+            });
+        }, 1000 / 4)
+        const exec_jump = () => start_task("jump", AzureApi.jump, 1000 / 4)
+
+        // 札遊び
+        const exec_card_collect = () => {
+            start_task("card_collect", async () => {
+                const l = [
+                    ["card_collect_1", "card_collect_1.png", 667, 230, 728, 277, 667, 230], // カード
+                    //["card_collect_2", "card_collect_2.png",   663,300,  702,323, 663,239], // 使用 663,239,  706,260
+                    ["card_collect_30", "card_collect_4.png", 1172, 516, 1216, 539, 1172, 516], // 完了
+                ];
+                const l1 = [
+                    ["card_collect_4", "card_collect_3.png", 387, 552, 459, 569, 409, 353], // 所有1 1
+                    ["card_collect_5", "card_collect_4.png", 391, 552, 464, 569, 409, 353], // 所有1 2
+                ];
+                const l2 = [
+                    ["card_collect_6", "card_collect_5.png", 611, 553, 683, 565, 646, 358], // 所有2 1
+                    ["card_collect_7", "card_collect_3.png", 618, 552, 686, 566, 646, 358], // 所有2 2
+                ];
+                const l3 = [
+                    ["card_collect_8", "card_collect_6.png", 833, 551, 905, 566, 835, 383], // 所有3 1
+                    ["card_collect_9", "card_collect_3.png", 840, 552, 908, 568, 835, 383], // 所有3 2
+                ];
+                await AzureApi.MatchAndTouch(l).then(async res => {
+                    const index = res.index;
+                    if (index >= 0) {
+                        const m = l[index];
+                        switch (m[0]) {
+                            case "card_collect_1":
+                                await AzureApi.Touch(663, 239);
+                                break;
+                            case "card_collect_3":
+                                let r = 0;
+                                r = await AzureApi.MatchAndTouch(l1).then(async res2 => res2.index);
+                                add_message(`l1:${r}`);
+                                if (r < 0) {
+                                    //await AzureApi.Touch(409,353);
+                                } else {
+                                    r = await AzureApi.MatchAndTouch(l2).then(async res2 => res2.index);
+                                    add_message(`l2:${r}`);
+                                    if (r < 0) {
+                                        //await AzureApi.Touch(646,358);
+                                    } else {
+                                        r = await AzureApi.MatchAndTouch(l3).then(async res2 => res2.index);
+                                        add_message(`l3:${r}`);
+                                        if (r < 0) {
+                                            //await AzureApi.Touch(835,383);
+                                        }
+                                    }
+                                }
+                                //await AzureApi.Touch(1172,516);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return "";
+                });
+                return new Promise((resolve, reject) => {
+                    resolve({ message: "" });
+                });
+            }, 10);
+        }
+        // 神格採取
+        const exec_gods_collect = () => {
+            start_task("gods_collect", async () => {
+                const l = [
+                    ["gods_collect_3", "gods_collect_3.png", 1022, 457, 1059, 483, 1022, 457], // 採取 星
+                    ["gods_collect_1", "gods_collect_1.png", 624, 490, 672, 510, 716, 475], // 採取
+                    ["gods_collect_2", "gods_collect_2.png", 716, 475, 774, 503, 716, 475], // 了解
+                ];
+                await AzureApi.MatchAndTouch(l).then(async res => {
+                    const index = res.index;
+                    if (index >= 0) {
+                        const m = l[index];
+                        switch (m[0]) {
+                            case "gods_collect_3":
+                                await AzureApi.Touch(1022, 457);
+                                await AzureApi.Sleep(2.0);
+                                await AzureApi.Touch(716, 475);// await AzureApi.Sleep(0.5); break;
+                                await AzureApi.Touch(716, 475);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return "";
+                });
+                return new Promise((resolve, reject) => {
+                    resolve({ message: "" });
+                });
+            }, 100);
+        }
+        // 神語の試
+        const exec_quiz = () => {
+            let count = 0;
+            start_task("quiz", async () => {
+                const r = await AzureApi.MatchAndTouchEx(quiz_list).then(async res => {
+                    const index = res.index;
+                    if (index >= 0) {
+                        await AzureApi.Sleep(0.01);
+                        await AzureApi.Touch(309, 388);
+                    }
+                });
+                ++count;
+                add_message(`神語の試:${count}`);
+                return new Promise((resolve, reject) => {
+                    resolve({ message: "" });
+                });
+            }, 10);
+        }
+        // 星落演兵
+        let random_pvp_status = "";
+        const exec_random_pvp = () => {
+            let jump_count = 0;
+            let status = "None";
+            let target_pos = 0;
+            let wait_time = 5;
+            let s_time = new Date();
+            let in_pvp = false;
+            let move_click = false;
+            start_task("random_pvp", async () => {
+                const l = [
+                    ["random_pvp_1", "random_pvp_1.png", 689, 487, 740, 507, 700, 500], // 決定
+                    ["random_pvp_2", "random_pvp_2.png", 168, 105, 196, 124, -1, -1], // 決定
+                ];
+                let e_time = new Date();
+                switch (status) {
+                    case "None":
+                        await AzureApi.MatchAndTouch(l).then(async res => {
+                            const index = res.index;
+                            if (index >= 0) {
+                                const m = l[index];
+                                switch (m[0]) {
+                                    case "random_pvp_1":
+                                        wait_time = 18;
+                                        return "決定";
+                                    case "random_pvp_2":
+                                        s_time = new Date();
+                                        status = "Start";
+                                        return "開始";
+                                }
+                            }
+                            return "";
+                        });
+                        break;
+                    case "Start":
+                        jump_count = 0;
+                        if (e_time.getTime() - s_time.getTime() > wait_time * 1000) {
+                            s_time = new Date();
+                            target_pos = (target_pos + 1) % 3;
+                            switch (target_pos) {
+                                case 0: // 野営地
+                                    await AzureApi.Touch(117, 185); await AzureApi.Sleep(0.01); break;
+                                case 1: // 遺跡
+                                    await AzureApi.Touch(184, 185); await AzureApi.Sleep(0.01); break;
+                                case 2: // 祭壇
+                                    await AzureApi.Touch(253, 185); await AzureApi.Sleep(0.01); break;
+                            }
+                            move_click = true;
+                            status = "Move";
+                        } else {
+                            //add_message(`wait0:${e_time.getTime() - s_time.getTime()} > ${wait_time*1000}`);
+                        }
+                        status = "Move";
+                        break;
+                    case "Move":
+                        // 索敵
+                        await AzureApi.HasPvPTarget(26, 632, 87, 668).then(async res => {
+                            if (res == "Enemy") {
+                                add_message(`攻撃中:count=${jump_count},time=${e_time.getTime() - s_time.getTime()}`);
+                                move_click = false;
+                                wait_time = 5;
+                                if (jump_count % 2 == 0) {
+                                    // 真ん中
+                                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                    // ダッシュ
+                                    if (Math.random() > 0.5) {
+                                        for (let i = 0; i < 3; ++i) {
+                                            await AzureApi.Touch(930, 650); await AzureApi.Sleep(0.01);
+                                        }
+                                    }
+                                    // コンボ
+                                    if (Math.random() > 0.2 && jump_count > 5) {
+                                        await AzureApi.Touch(1020, 650); await AzureApi.Sleep(0.01);
+                                        await AzureApi.Touch(1010, 560); await AzureApi.Sleep(0.01);
+                                        await AzureApi.Touch(1030, 475); await AzureApi.Sleep(0.01);
+                                    }
+                                } else {
+                                    await AzureApi.Touch(1130, 430); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1222, 330); await AzureApi.Sleep(0.01);
+                                    // 真ん中
+                                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                    if (Math.random() > 0.5) {
+                                        await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                        await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                    }
+                                    // 無双
+                                    //await AzureApi.Touch(1100, 330); await AzureApi.Sleep(0.01);
+                                    //await AzureApi.Touch(1230, 440); await AzureApi.Sleep(0.01);
+                                    if (Math.random() > 0.5 && jump_count > 5) {
+                                        await AzureApi.Touch(1100, 330); await AzureApi.Sleep(0.01);
+                                        await AzureApi.Touch(1230, 440); await AzureApi.Sleep(0.01);
+                                    } else {
+                                        await AzureApi.Touch(1230, 440); await AzureApi.Sleep(0.01);
+                                        await AzureApi.Touch(1100, 330); await AzureApi.Sleep(0.01);
+                                    }
+                                }
+                                ++jump_count;
+                            } else if (move_click && res == "Move") {
+                                // 移動中なので待つ
+                                s_time = e_time
+                                switch (target_pos) {
+                                    case 0: // 野営地
+                                        await AzureApi.Touch(117, 178); await AzureApi.Sleep(0.01); break;
+                                    case 1: // 遺跡
+                                        await AzureApi.Touch(184, 178); await AzureApi.Sleep(0.01); break;
+                                    case 2: // 祭壇
+                                        await AzureApi.Touch(253, 178); await AzureApi.Sleep(0.01); break;
+                                }
+                                add_message(`移動中なので待つ`);
+                            } else if (res == "Place") {
+                                // 拠点なので10秒待つ
+                                switch (target_pos) {
+                                    case 0: // 野営地
+                                        await AzureApi.Touch(117, 178); await AzureApi.Sleep(0.01); break;
+                                    case 1: // 遺跡
+                                        await AzureApi.Touch(184, 178); await AzureApi.Sleep(0.01); break;
+                                    case 2: // 祭壇
+                                        await AzureApi.Touch(253, 178); await AzureApi.Sleep(0.01); break;
+                                }
+                                move_click = false;
+                                if (e_time.getTime() - s_time.getTime() > 10 * 1000) {
+                                    status = "Start";
+                                    wait_time = 5;
+                                    add_message(`拠点なので10秒待つ:${e_time.getTime() - s_time.getTime()}`);
+                                }
+                            } else if (e_time.getTime() - s_time.getTime() > wait_time * 1000) {
+                                move_click = false;
+                                status = "Start";
+                                wait_time = 5;
+                                add_message(`次の拠点へ:${e_time.getTime() - s_time.getTime()}`);
+                            } else {
+                                move_click = false;
+                            }
+                        });
+                        break;
+                }
+                return new Promise((resolve, reject) => {
+                    resolve({ message: "" });
+                });
+            }, 10);
+        }
+        // 競技場
+        const exec_stadium = () => {
+            let stadium_jump_count = 0;
+            let stadium_status = "";
+
+            start_task("stadium", async () => {
+                let delay = 0;
+                const l = [
+                    ["stadium_time", "stadium_time.png", 215, 300, 265, 320, 215, 300],
+                    ["img_stadium_finish", "stadium_finish.png", 610, 635, 670, 660, 610, 670],
+                    ["img_stadium_match", "stadium_match.png", 1000, 620, 1180, 645, -1, -1],
+                    ["stadium_time_jump", "stadium_time.png", 1190, 620, 1224, 660, -1, -1],
+                ];
+                if (stadium_jump_count > 5) {
+                    // 真ん中
+                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                }
+                const r = await AzureApi.MatchAndTouch(l).then(async res => {
+                    const index = res.index;
+                    if (index >= 0) {
+                        const m = l[index];
+                        switch (m[0]) {
+                            case "img_stadium_finish":
+                                stadium_status = "finish";
+                                return "完了";
+                            case "img_stadium_match":
+                                stadium_status = "match";
+                                stadium_jump_count = 0;
+                                await AzureApi.Touch(530, 500); await AzureApi.Sleep(0.01);
+                                await AzureApi.Touch(1220, 240); await AzureApi.Sleep(0.01);
+                                await AzureApi.Touch(1000, 620); await AzureApi.Sleep(0.01);
+                                return "マッチング";
+                            case "stadium_time_jump":
+                                if (stadium_status == "finish") {
+                                    return "";
+                                }
+                                ++stadium_jump_count;
+                                // ダッシュ
+                                if (Math.random() > 0.5) {
+                                    if (Math.random() > 0.7 && stadium_jump_count > 5) {
+                                        await AzureApi.KeyDown(105)
+                                        for (let i = 0; i < 3; ++i) {
+                                            await AzureApi.Touch(930, 650); await AzureApi.Sleep(0.01);
+                                        }
+                                        await AzureApi.KeyUp(105)
+                                    } else {
+                                        for (let i = 0; i < 3; ++i) {
+                                            await AzureApi.Touch(930, 650); await AzureApi.Sleep(0.01);
+                                        }
+                                    }
+                                }
+                                // コンボ
+                                if (Math.random() > 0.2 && stadium_jump_count > 5) {
+                                    await AzureApi.Touch(1020, 650); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1010, 560); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1030, 475); await AzureApi.Sleep(0.01);
+                                }
+                                //
+                                await AzureApi.Touch(1130, 430); await AzureApi.Sleep(0.01);
+                                await AzureApi.Touch(1222, 330); await AzureApi.Sleep(0.01);
+                                // 真ん中
+                                await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                if (Math.random() > 0.5) {
+                                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1150, 550); await AzureApi.Sleep(0.01);
+                                }
+                                // 無双
+                                if (Math.random() > 0.5 && stadium_jump_count > 5) {
+                                    await AzureApi.Touch(1230, 440); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1100, 330); await AzureApi.Sleep(0.01);
+                                } else {
+                                    await AzureApi.Touch(1100, 330); await AzureApi.Sleep(0.01);
+                                    await AzureApi.Touch(1230, 440); await AzureApi.Sleep(0.01);
+                                }
+                                delay = 70;
+                                return "攻撃";
+                        }
+                    }
+                    return "";
+                });
+                add_message(r);
+                return new Promise((resolve, reject) => {
+                    resolve({ message: r, delay: delay });
+                });
+            }, 100);
+        };
+        const exec_treasure_box = () => start_task("treasure_box", () => {
+            return AzureApi.MatchAndTouch([
+                ["宝箱", "treasure_box.png", 400, 575, 425, 605, 400, 600],
+                ["ご祝儀", "treasure_box_result.png", 100, 10, 210, 50, 50, 50],
+                ["省エネ1", "wait.png", 94, 366, 260, 430, 1200, 10],
+                ["省エネ2", "wait2.png", 94, 366, 260, 430, 1200, 10],
+                ["ターン終了", "turn_end.png", 1141, 267, 1208, 317, 1200, 280],
+            ]);
+        }, 1000);
+        const exec_daily_shop_mission = () => start_task("daily_shop_mission", () => {
+            return AzureApi.MatchAndTouch([
+                ["スキップ", "_capture_skip.png", 1030, 15, 1070, 40, 1040, 30],
+                ["!", "_capture_bikkuri.png", 1025, 445, 1054, 495, 1025, 445],
+                ["?", "_capture_quation.png", 1025, 445, 1054, 495, 1025, 445],
+                ["万事屋", "kim_check10.png", 79, 147, 160, 161, 160, 161],
+                ["キムの心配事1", "kim_check1.png", 82, 170, 280, 250, 100, 200],
+                ["キムの心配事2", "kim_check5.png", 82, 170, 280, 250, 100, 200],
+                ["キムは助っ人を探している", "kim_check2.png", 82, 170, 280, 250, 100, 200],
+                ["戻ってキムに宝箱を置いたことを伝えよう", "kim_check3.png", 82, 170, 229, 214, 100, 200],
+                ["戻ってキムに宝箱を置いたことを伝えよう2", "kim_check6.png", 82, 170, 229, 214, 100, 200],
+                ["戻ってキムに宝箱を置いたことを伝えよう3", "kim_check9.png", 82, 170, 229, 214, 100, 200],
+                ["戻ってキムに宝箱を置いたことを伝えよう4", "kim_check9.png", 82, 170, 229, 214, 100, 200],
+                ["からくり人形を直す", "kim_check4.png", 82, 170, 280, 220, 100, 200],
+                ["エミの司会内容を確認する", "kim_check7.png", 77, 170, 280, 190, 100, 180],
+                ["たぬ郎を見つけ、宣伝スローガンを代わりに覚える", "kim_check8.png", 77, 170, 280, 190, 100, 180],
+                ["霧の妖精に最後の欠片を返してもらう", "job1.png", 77, 172, 172, 220, 100, 200],
+                ["霧の湿地で泣き声が聞こえる、何なんだ？", "job2.png", 77, 172, 172, 220, 100, 200],
+                ["かりくり人形のでんでん太鼓を見つける", "job3.png", 77, 172, 172, 220, 100, 200],
+                ["残りのを見つけ出す", "job4.png", 77, 172, 239, 191, 100, 200],
+                ["最後の欠片を取り返す", "job5.png", 77, 172, 239, 191, 100, 200],
+                ["からくり人形に返す", "job6.png", 77, 172, 239, 191, 100, 200],
+                ["胞子を傘村の図書管理員茸イチイチにあげよう", "job7.png", 77, 172, 286, 218, 100, 200],
+                ["胞子を茸イチイチに渡す", "job8.png", 77, 172, 271, 187, 100, 200],
+                ["無事届けた、○○に報告しよう", "job9.png", 77, 172, 172, 219, 100, 200],
+                ["たぬ蔵の要求を聞く 食材を取る", "job10.png", 77, 172, 232, 219, 100, 200],
+                ["シロップが入っていたのか判断する", "job11.png", 79, 196, 284, 243, 100, 200],
+                ["たぬ蔵に判断結果を伝える", "job12.png", 77, 172, 289, 190, 100, 200],
+                ["見事に正解！", "job13.png", 77, 172, 289, 190, 100, 200],
+                ["○○は蛍川にいくようだ", "job14.png", 116, 170, 282, 193, 100, 200],
+            ]);
+        }, 1000);
+        // 仕事 美容師
+        const exec_job_hairdresser = () => {
+            let count = 20;
+            let step = 1;
+
+            start_task("job_hairdresser", async () => {
+                const l = [
+                    ["修正", "job_hairdresser01.png", 1114, 617, 1161, 660, 1160, 650],
+                    ["製造保存", "job_hairdresser02.png", 1048, 639, 1136, 671, -1, -1], // 1053,402
+                    ["決定", "job_hairdresser03.png", 709, 483, 771, 507, 710, 500],
+                ];
+                const r = await AzureApi.MatchAndTouch(l).then(async res => {
+                    const index = res.index;
+                    if (index >= 0) {
+                        const m = l[index];
+                        switch (m[0]) {
+                            case "修正":
+                                await AzureApi.Sleep(1);
+                                return `修正 残り：${count}`;
+                            case "製造保存":
+                                ++step;
+                                if ((step % 2) == 0) {
+                                    await AzureApi.Touch(1050, 400); await AzureApi.Sleep(0.01);
+                                } else {
+                                    await AzureApi.Touch(1100, 500); await AzureApi.Sleep(0.01);
+                                }
+                                await AzureApi.Touch(1050, 650); await AzureApi.Sleep(0.01);
+                                return "製造保存";
+                            case "決定":
+                                --count;
+                                if (count < 0) {
+                                    exec_stop();
+                                }
+                                return `決定 残り：${count}`;
+                        }
+                    }
+                    return "";
+                });
+                add_message(r);
+                return new Promise((resolve, reject) => {
+                    resolve({ message: r });
+                });
+            }, 100 / 2);
+        };
+        const exec_test = async () => {
+            add_message("test")
+        }
+
+        let attack_time = [
+            0, 1000 / 4, 1000 / 4
+        ]
+        const exec_attack_time = (inc1, inc2) => {
+            if (timer_id[1]) {
+                attack_time[1] = inc1
+                exec_attack(1)
+            }
+            if (timer_id[2]) {
+                attack_time[2] = inc2
+                exec_attack(2)
+            }
+            add_message(attack_time[1]);
+        }
+        const exec_attack = (id) => {
+            clearInterval(timer_id[id]);
+            if (attack_time[id] <= 0) {
+                return;
+            }
+            timer_id[id] = setInterval(() => {
+                const t = document.getElementById(`dev${id}`).value;
+                if (t.length > 0) {
+                    AzureApi.Touch(1150, 550, `127.0.0.1:${t}`);
+                } else {
+                    AzureApi.Touch(1150, 550);
+                }
+            }, attack_time[id]);
+        }
+
+        const exec_device = () => {
+            AzureApi.device_list().then(async (res) => {
+                const t = res.message;
+                {
+                    for (const e of document.querySelectorAll("img[id^='dev*']")) {
+                        e.src = "image/device_0.png";
+                    }
+                }
+                let i = 0;
+                for (const item of t.split(/(\n\r|\r|\n)/)) {
+                    if (item.match(/:([0-9]+)/)) {
+                        ++i;
+                        const e = document.getElementById(`dev${i}`);
+                        if (e) {
+                            const t = RegExp.$1;
+                            e.value = t;
+                            await AzureApi.save_screen_ext(`device_${i}`, `127.0.0.1:${t}`);
+                            const img = document.getElementById(`dev${i}_img`);
+                            if (img) {
+                                let s_time = new Date();
+                                add_message(`device_${i}.png?${s_time.getTime()}`);
+                                img.src = `saveimage/device_${i}.png?${s_time.getTime()}`;
+                            }
+                            if (i == 1) {
+                                const cur_img = document.getElementById("dev_cur_img");
+                                if (cur_img) {
+                                    let s_time = new Date();
+                                    cur_img.src = `saveimage/device_${i}.png?${s_time.getTime()}`;
+                                }
+                            }
+                        }
+                    }
+                }
+                add_message(t);
+            })
+        }
+        document.getElementById("dev1_set").addEventListener("click", e => {
+            AzureApi.set_device(`127.0.0.1:${document.getElementById("dev1").value}`);
+            const cur_img = document.getElementById("dev_cur_img");
+            if (cur_img) {
+                let s_time = new Date();
+                cur_img.src = `saveimage/device_1.png?${s_time.getTime()}`;
+            }
+        });
+        document.getElementById("dev2_set").addEventListener("click", e => {
+            AzureApi.set_device(`127.0.0.1:${document.getElementById("dev2").value}`);
+            const cur_img = document.getElementById("dev_cur_img");
+            if (cur_img) {
+                let s_time = new Date();
+                cur_img.src = `saveimage/device_2.png?${s_time.getTime()}`;
+            }
+        });
+        document.getElementById("dev3_set").addEventListener("click", e => {
+            AzureApi.set_device(`127.0.0.1:${document.getElementById("dev3").value}`);
+            const cur_img = document.getElementById("dev_cur_img");
+            if (cur_img) {
+                let s_time = new Date();
+                cur_img.src = `saveimage/device_3.png?${s_time.getTime()}`;
+            }
+        });
+        document.getElementById("dev4_set").addEventListener("click", e => {
+            AzureApi.set_device(`127.0.0.1:${document.getElementById("dev4").value}`);
+            const cur_img = document.getElementById("dev_cur_img");
+            if (cur_img) {
+                let s_time = new Date();
+                cur_img.src = `saveimage/device_4.png?${s_time.getTime()}`;
+            }
+        });
+
+    </script>
+</body>
+
+</html>
+
