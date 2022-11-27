@@ -691,6 +691,74 @@ namespace AzureaTool
             }
             return -1;
         }
+        public float MatchImageTest(string str, int x1, int y1, int x2, int y2)
+        {
+            try
+            {
+                var img1 = LoadImage(str);
+                if (img1 == null || img1.Empty())
+                {
+                    return -1;
+                }
+                var img2 = capture_screen();
+                if (img2 == null || img2.Empty())
+                {
+                    return -1;
+                }
+                var height = img1.Height;
+                var width = img1.Width;
+                OpenCvSharp.Size image_size = new(Math.Max(height, 256), Math.Max(width, 256));
+                var gray1 = new Mat(y2 - y1, x2 - x1, MatType.CV_8U);
+                var gray2 = new Mat(y2 - y1, x2 - x1, MatType.CV_8U);
+                Cv2.CvtColor(img2.Clone(new Rect(x1, y1, x2 - x1, y2 - y1)), gray2, ColorConversionCodes.RGB2GRAY);
+                const int threshold = 80;
+                Cv2.Threshold(gray2, gray2, threshold, 255, ThresholdTypes.Binary | ThresholdTypes.Otsu);
+                Cv2.Resize(gray2, gray2, image_size);
+
+                Mat target_des = new();
+                Mat comparing_des = new();
+                try
+                {
+                    Cv2.CvtColor(img1.Clone(new Rect(x1, y1, x2 - x1, y2 - y1)), gray1, ColorConversionCodes.RGB2GRAY);
+                    Cv2.Threshold(gray1, gray1, threshold, 255, ThresholdTypes.Binary | ThresholdTypes.Otsu);
+                    Cv2.Resize(gray1, gray1, image_size);
+
+                    detector.DetectAndCompute(gray1, null, out _, target_des);
+                }
+                catch (Exception ex)
+                {
+                    ErrorLog(ex);
+                    return -1;
+                }
+                detector.DetectAndCompute(gray2, null, out _, comparing_des);
+                if (comparing_des.Empty())
+                {
+                    return -1;
+                }
+                DMatch[] matches;
+                try
+                {
+                    matches = bf.Match(target_des, comparing_des);
+                }
+                catch (Exception ex)
+                {
+                    ErrorLog(ex);
+                    return -1;
+                }
+                // 特徴量の距離を出し、平均を取る
+                float ret = 200;
+                if (matches.Length > 0)
+                {
+                    ret = matches.Select(item => item.Distance).Average();
+                }
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                ErrorLog(ex);
+                return -1;
+            }
+        }
         public void deleteMatchCache(Dictionary<string, Mat> l, string m)
         {
             List<string> keys = new();

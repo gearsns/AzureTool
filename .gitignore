@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs/AzureaTool
+/bin/publish
+/bin/Release/net6.0-windows
+/obj
+/AzureaTool.csproj.user
+/image.drawio
+/AzureaTool.user
+/.vs/ProjectEvaluation

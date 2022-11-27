@@ -29,7 +29,7 @@
         }
         div button:hover {
             -webkit-transform: scale(1.1) rotate(10deg);
-            transform: rscale(1.1) otate(10deg);
+            transform: scale(1.1) rotate(10deg);
         }
         div button:disabled {
             background-color: #d8bfa0;
@@ -746,10 +746,11 @@
             start_task("stadium", async () => {
                 let delay = 0;
                 const l = [
-                    ["stadium_time", "stadium_time.png", 215, 300, 265, 320, 215, 300],
-                    ["img_stadium_finish", "stadium_finish.png", 610, 635, 670, 660, 610, 670],
-                    ["img_stadium_match", "stadium_match.png", 1000, 620, 1180, 645, -1, -1],
-                    ["stadium_time_jump", "stadium_time.png", 1190, 620, 1224, 660, -1, -1],
+                    ["stadium_time"      , "stadium_time.png"  ,  215, 300,  265, 320, 215, 300],
+                    ["img_stadium_finish", "stadium_finish.png",  610, 635,  670, 660, 610, 670],
+                    ["img_stadium_cancel", "stadium_cancel.png",  506, 486,  577, 503, 506, 486],
+                    ["img_stadium_match" , "stadium_match.png" , 1000, 620, 1180, 645,  -1,  -1],
+                    ["stadium_time_jump" , "stadium_time.png"  , 1190, 620, 1224, 660,  -1,  -1],
                 ];
                 if (stadium_jump_count > 5) {
                     // 真ん中
